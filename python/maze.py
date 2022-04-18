@@ -65,11 +65,31 @@ class Maze:
     def getCounted(self, nd):
         return self.counted[nd]
     
+    def getMDistance(self, nd_from, nd_to):
+        route = self.BFS_2(nd_from, nd_to)
+        x = 0
+        y = 0
+        for i in range (len(route) - 1):
+            dir = self.getNodeDict()[route[i]].getDirection(route[i + 1])
+            dis = self.getNodeDict()[route[i]].getDis(route[i + 1])
+            if dir == 3:
+                x += dis
+            elif dir == 1:
+                x -= dis
+            elif dir == 4:
+                y += dis
+            else:
+                y -= dis
+
+        return (x * x + y * y)
+    
     def getEnd(self):
         end = []
         for i in range (self.getNum()):
             if self.getAdj(i + 1) == 1:
                 end.append(i + 1)
+        if end[0] == 1:
+            end.pop(0)
         return end
 
     def BFS(self, nd):
@@ -122,7 +142,6 @@ class Maze:
         self.turn = self.BFS_2(nd_from, nd_to)
         self.action = []
         if len(self.turn) >= 3:
-            self.action.append('F')
             for i in range (len(self.turn)-2):
                 dir_start = 0
                 dir_end = 0
@@ -141,18 +160,83 @@ class Maze:
                 elif (dir_end - dir_start + 4) % 4 == 0: ##迴轉
                     self.action.append('B')
             self.action.append('B')
-            self.action.pop(0) 
         return self.action
     
     def getTotalAction(self):
         end = self.getEnd()
-        acroute = []
         start = self.getStartPoint()
+        acroute = []
+        for i in range(len(self.getAction(start, end[0]))):
+            acroute.append(self.getAction(start, end[0])[i])
         for i in range (len(end) - 1):
             for j in range(len(self.getAction(end[i], end[i + 1]))):
                 acroute.append(self.getAction(end[i], end[i + 1])[j])
         acroute.append('S')
-        end.pop(0)
+        actnum = len(self.getAction(start, end[0]))
+        for i in range (len(end) - 1):
+            actnum += len(self.getAction(end[i], end[i + 1]))
+        while True:
+            j = -1
+            for i in range (len(end)-2, -1, -1):
+                if end[i] < end[i + 1]:
+                    j = i
+                    break
+            
+            if j == -1:
+                return acroute
+            k = -1
+            min = 200
+            for i in range (j,len(end)):
+                if end[i] > end[j] and end[i] <= min:
+                    min = end[i]
+                    k = i
+
+            end[j], end[k] = end[k], end[j]
+            left = j + 1
+            right = len(end) - 1
+            while left < right:
+                end[left], end[right] = end[right], end[left]
+                left += 1
+                right -= 1
+            route = []
+            num = len(self.getAction(start, end[0]))
+            for i in range (len(end) - 1):
+                num += len(self.getAction(end[i], end[i + 1]))
+            if num < actnum:
+                for i in range(len(self.getAction(start, end[0]))):
+                    route.append(self.getAction(start, end[0])[i])
+                for i in range (len(end) - 1):
+                    for l in range (len(self.getAction(end[i], end[i + 1]))):
+                        route.append(self.getAction(end[i], end[i + 1])[l])
+                route.append('S')
+                actnum = num
+                acroute = route
+
+    def getTotalAction_2(self):
+        end = self.getEnd()
+        start = self.getStartPoint()
+        acroute = []
+        ldis = 0
+        f_p_index = 0
+        for i in range (len(end)):
+            if self.getMDistance(start, end[i]) > ldis:
+                ldis = self.getMDistance(start, end[i])
+                f_p_index = i
+        actnum = len(self.getAction(start, end[f_p_index]))
+        for i in range(len(self.getAction(start, end[f_p_index]))):
+            acroute.append(self.getAction(start, end[f_p_index])[i])
+        nodefp = end[f_p_index]
+        end.pop(f_p_index)
+        actnum += len(self.getAction(nodefp, end[0]))
+        for i in range(len(self.getAction(nodefp, end[0]))):
+            acroute.append(self.getAction(nodefp, end[0])[i])
+        for i in range (len(end) - 1):
+            actnum += len(self.getAction(end[i], end[i + 1]))
+            for j in range(len(self.getAction(end[i], end[i + 1]))):
+                acroute.append(self.getAction(end[i], end[i + 1])[j])
+        acroute.append('S')
+        print(acroute)
+
         while True:
             j = -1
             for i in range (len(end)-2, -1, -1):
@@ -178,17 +262,21 @@ class Maze:
                 left += 1
                 right -= 1
             route = []
-            for i in range (len(self.getAction(1,end[0]))):
-                route.append(self.getAction(1,end[0])[i])
+            num = len(self.getAction(start, nodefp))
+            num += len(self.getAction(nodefp, end[0]))
             for i in range (len(end) - 1):
-                for l in range (len(self.getAction(end[i], end[i + 1]))):
-                    route.append(self.getAction(end[i], end[i + 1])[l])
-            route.append('S')
-            print(route)
-            if len(acroute) > len(route):
+                num += len(self.getAction(end[i], end[i + 1]))
+            if num < actnum:
+                for i in range(len(self.getAction(start, nodefp))):
+                    route.append(self.getAction(start, nodefp)[i])
+                for i in range(len(self.getAction(nodefp, end[0]))):
+                    route.append(self.getAction(nodefp, end[0])[i])
+                for i in range (len(end) - 1):
+                    for l in range (len(self.getAction(end[i], end[i + 1]))):
+                        route.append(self.getAction(end[i], end[i + 1])[l])
+                route.append('S')
+                actnum = num
                 acroute = route
-
-
 
 
     def strategy(self, nd):
@@ -199,4 +287,4 @@ class Maze:
 
 if __name__ == '__main__':
     mz = Maze("medium_maze.csv")
-    mz.getTotalAction()
+    print(mz.getTotalAction_2())
