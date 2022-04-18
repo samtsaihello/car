@@ -6,6 +6,10 @@
 // Modify		  [2020/03/027 Erik Kuo]
 /***************************************************************************/
 
+#ifndef _NODE_
+#define _NODE_
+
+
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
@@ -16,3 +20,6 @@ int extern _Tp;
 
 // TODO: add some function to control your car when encounter a node
 // here are something you can try: left_turn, right_turn... etc.
+
+
+#endif

@@ -5,9 +5,13 @@
 // Functions  [rfid]
 // Modify     [2020/03/27 Erik Kuo]
 /***************************************************************************/
+#ifndef _RFID_
+#define _RFID_
+//沒用
+
+
 
 /*===========================don't change anything in this file===========================*/
-
 #include <SPI.h>
 #include <MFRC522.h>     // 引用程式庫
 /* pin---- SDA:9 SCK:13 MOSI:11 MISO:12 GND:GND RST:define on your own  */
@@ -33,8 +37,12 @@ byte* rfid(byte& idSize) {
       }
       Serial.println();
       #endif
+      
       mfrc522.PICC_HaltA();  // 讓卡片進入停止模式
       return id;
     }
     return 0;
 }
+
+
+#endif
