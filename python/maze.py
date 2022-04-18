@@ -235,7 +235,6 @@ class Maze:
             for j in range(len(self.getAction(end[i], end[i + 1]))):
                 acroute.append(self.getAction(end[i], end[i + 1])[j])
         acroute.append('S')
-        print(acroute)
 
         while True:
             j = -1
@@ -287,4 +286,4 @@ class Maze:
 
 if __name__ == '__main__':
     mz = Maze("medium_maze.csv")
-    print(mz.getTotalAction_2())
+    print(mz.getTotalAction())
