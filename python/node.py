@@ -23,7 +23,6 @@ class Node:
     def getSuccessors(self):
         return self.Successors
 
-
     def getDis(self, nd):
         distance = 0
         for succ in self.Successors:
