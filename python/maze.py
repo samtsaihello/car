@@ -69,6 +69,7 @@ class Maze:
         route = self.BFS_2(nd_from, nd_to)
         x = 0
         y = 0
+        r = 0
         for i in range (len(route) - 1):
             dir = self.getNodeDict()[route[i]].getDirection(route[i + 1])
             dis = self.getNodeDict()[route[i]].getDis(route[i + 1])
@@ -80,8 +81,10 @@ class Maze:
                 y += dis
             else:
                 y -= dis
-
-        return (x * x + y * y)
+        r = x + y
+        if r < 0:
+            r = -r
+        return r
     
     def getEnd(self):
         end = []
@@ -159,7 +162,9 @@ class Maze:
                     self.action.append('L')
                 elif (dir_end - dir_start + 4) % 4 == 0: ##迴轉
                     self.action.append('B')
-            self.action.append('B')
+            for en in self.getEnd():
+                if nd_to == en:
+                    self.action.append('B')
         return self.action
     
     def getTotalAction(self):
@@ -219,6 +224,7 @@ class Maze:
         ldis = 0
         f_p_index = 0
         for i in range (len(end)):
+            print(self.getMDistance(start, end[i]))
             if self.getMDistance(start, end[i]) > ldis:
                 ldis = self.getMDistance(start, end[i])
                 f_p_index = i
@@ -285,5 +291,5 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("medium_maze.csv")
-    print(mz.getTotalAction())
+    mz = Maze("maze.csv")
+    print(mz.getTotalAction_2())
