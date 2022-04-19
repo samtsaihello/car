@@ -224,7 +224,6 @@ class Maze:
         ldis = 0
         f_p_index = 0
         for i in range (len(end)):
-            print(self.getMDistance(start, end[i]))
             if self.getMDistance(start, end[i]) > ldis:
                 ldis = self.getMDistance(start, end[i])
                 f_p_index = i
