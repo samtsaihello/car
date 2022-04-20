@@ -28,6 +28,7 @@ class Maze:
             self.counted.append(0)
         self.nodes = []
         self.nd_dict = dict()  # key: index, value: the correspond node
+        self.bfsdis = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
         
         for i in range (self.num):
             d = Node (i+1)
@@ -73,17 +74,13 @@ class Maze:
         for i in range (len(route) - 1):
             dir = self.getNodeDict()[route[i]].getDirection(route[i + 1])
             dis = self.getNodeDict()[route[i]].getDis(route[i + 1])
-            if dir == 3:
-                x += dis
-            elif dir == 1:
-                x -= dis
-            elif dir == 4:
-                y += dis
-            else:
-                y -= dis
+            if dir == 3: x += dis
+            elif dir == 1: x -= dis
+            elif dir == 4: y += dis
+            else: y -= dis
+        if x < 0: x = -x
+        if y < 0: y = -y
         r = x + y
-        if r < 0:
-            r = -r
         return r
     
     def getEnd(self):
@@ -92,7 +89,7 @@ class Maze:
             if self.getAdj(i + 1) == 1:
                 end.append(i + 1)
         if end[0] == 1:
-            end.pop(0)
+            end.pop(0) #1不包含於 end point
         return end
 
     def BFS(self, nd):
@@ -102,11 +99,25 @@ class Maze:
         '''counted = np.zeros(100,dtype = bool)'''
         return None
 
+    def TurnDirection(self, dir_end, dir_start):
+        if (dir_end - dir_start + 4) % 4 == 2: ##直走
+            return 'F'
+        elif (dir_end - dir_start + 4) % 4 == 3: ##右轉
+            return 'R'
+        elif (dir_end - dir_start + 4) % 4 == 1: ##左轉
+            return 'L'
+        elif (dir_end - dir_start + 4) % 4 == 0: ##迴轉
+            return 'B'
+
+
     def BFS_2(self, nd_from, nd_to):
         # TODO : similar to BFS but with fixed start point and end point
         # Tips : return a sequence of nodes of the shortest path
         self.pred = []
         self.dis = []
+        straight = 1
+        turn_time = 2
+        back = 4
         for i in range (100):
             self.dis.append(int(200))
         for i in range (100):
@@ -117,7 +128,14 @@ class Maze:
         self.dis[nd_to] = 0
         while True:
             for succ in self.nd_dict[self.que[0]].getSuccessors():
-                if (self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0]))) < self.dis[int(succ[0])] :
+                exp_dis = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0])) * straight
+                dir_end = succ[1]
+                dir_start = self.pred[self.que[0]]
+                turn = self.TurnDirection(dir_end, dir_start)
+                if turn == 'F': exp_dis += straight
+                elif turn == 'R' or turn == 'L': exp_dis += turn_time
+                elif turn == 'B': exp_dis += back
+                if (exp_dis) < self.dis[int(succ[0])] :
                     self.que.append(int(succ[0]))
                     self.dis[int(succ[0])] = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0]))
                     self.pred[int(succ[0])] = self.que[0]
@@ -144,42 +162,54 @@ class Maze:
 		# If not, print error message and return 0
         self.turn = self.BFS_2(nd_from, nd_to)
         self.action = []
-        if len(self.turn) >= 3:
-            for i in range (len(self.turn)-2):
-                dir_start = 0
-                dir_end = 0
-                for succ in self.nd_dict[self.turn[i+1]].getSuccessors():
-                    if succ[0] == self.turn[i]:
-                        dir_start = succ[1]
-                    elif succ[0] == self.turn [i+2]:
-                        dir_end = succ[1]
-
-                if (dir_end - dir_start + 4) % 4 == 2: ##直走
-                    self.action.append('F')
-                elif (dir_end - dir_start + 4) % 4 == 3: ##右轉
-                    self.action.append('R')
-                elif (dir_end - dir_start + 4) % 4 == 1: ##左轉
-                    self.action.append('L')
-                elif (dir_end - dir_start + 4) % 4 == 0: ##迴轉
-                    self.action.append('B')
-            for en in self.getEnd():
-                if nd_to == en:
-                    self.action.append('B')
+        for i in range (len(self.turn)-2):
+            dir_start = 0
+            dir_end = 0
+            for succ in self.nd_dict[self.turn[i+1]].getSuccessors():
+                if succ[0] == self.turn[i]:
+                    dir_start = succ[1]
+                elif succ[0] == self.turn [i+2]:
+                    dir_end = succ[1]
+            self.action.append(self.TurnDirection(dir_end, dir_start))
+        for en in self.getEnd():
+            if nd_to == en:
+                self.action.append('B')
         return self.action
     
+    def getAllPathTime(self):
+        for end in self.getEnd():
+            time = 0
+            index = self.BFS_2(1,end)
+            act = self.getAction(1,end)
+            for i in range(len(index) - 1):
+                time += self.nd_dict[index[i]].getDis(index[i + 1])
+            for a in act:
+                if a == 'F': time += 1
+                elif a == 'R' or a == 'L': time +=2
+                elif a == 'B': time +=4
+            self.bfsdis[1][end], self.bfsdis[end][1] = time, time
+        _end = self.getEnd()
+        for i in range(len(_end)):
+            for j in range (i + 1, len(_end)):
+                time = 0
+                index = self.BFS_2(_end[i], _end[j])
+                act = self.getAction(_end[i], _end[j])
+                for l in range(len(index) - 1):
+                    time += self.nd_dict[index[l]].getDis(index[l + 1])
+                for a in act:
+                    if a == 'F': time += 1
+                    elif a == 'R' or a == 'L': time +=2
+                    elif a == 'B': time +=4
+                self.bfsdis[_end[i]][_end[j]], self.bfsdis[_end[j]][_end[i]] = time, time
+
     def getTotalAction(self):
+        self.getAllPathTime()
         end = self.getEnd()
         start = self.getStartPoint()
+        actime = self.bfsdis[start][end[0]]
         acroute = []
-        for i in range(len(self.getAction(start, end[0]))):
-            acroute.append(self.getAction(start, end[0])[i])
         for i in range (len(end) - 1):
-            for j in range(len(self.getAction(end[i], end[i + 1]))):
-                acroute.append(self.getAction(end[i], end[i + 1])[j])
-        acroute.append('S')
-        actnum = len(self.getAction(start, end[0]))
-        for i in range (len(end) - 1):
-            actnum += len(self.getAction(end[i], end[i + 1]))
+            actime += self.bfsdis[end[i]][end[i + 1]]
         while True:
             j = -1
             for i in range (len(end)-2, -1, -1):
@@ -203,44 +233,76 @@ class Maze:
                 end[left], end[right] = end[right], end[left]
                 left += 1
                 right -= 1
-            route = []
-            num = len(self.getAction(start, end[0]))
+            time = self.bfsdis[start][end[0]]
             for i in range (len(end) - 1):
-                num += len(self.getAction(end[i], end[i + 1]))
-            if num < actnum:
+                time += self.bfsdis[end[i]][end[i + 1]]
+            if time < actime:
+                acroute = []
                 for i in range(len(self.getAction(start, end[0]))):
-                    route.append(self.getAction(start, end[0])[i])
+                    acroute.append(self.getAction(start, end[0])[i])
                 for i in range (len(end) - 1):
                     for l in range (len(self.getAction(end[i], end[i + 1]))):
-                        route.append(self.getAction(end[i], end[i + 1])[l])
-                route.append('S')
-                actnum = num
-                acroute = route
+                        acroute.append(self.getAction(end[i], end[i + 1])[l])
+                acroute.append('S')
+                actime = time
 
     def getTotalAction_2(self):
+        self.getAllPathTime()
         end = self.getEnd()
         start = self.getStartPoint()
         acroute = []
+        actime = 0
+        acpath = []
+        tem = []
         ldis = 0
+        f_p = 0
         f_p_index = 0
         for i in range (len(end)):
             if self.getMDistance(start, end[i]) > ldis:
                 ldis = self.getMDistance(start, end[i])
-                f_p_index = i
-        actnum = len(self.getAction(start, end[f_p_index]))
-        for i in range(len(self.getAction(start, end[f_p_index]))):
-            acroute.append(self.getAction(start, end[f_p_index])[i])
-        nodefp = end[f_p_index]
-        end.pop(f_p_index)
-        actnum += len(self.getAction(nodefp, end[0]))
-        for i in range(len(self.getAction(nodefp, end[0]))):
-            acroute.append(self.getAction(nodefp, end[0])[i])
-        for i in range (len(end) - 1):
-            actnum += len(self.getAction(end[i], end[i + 1]))
-            for j in range(len(self.getAction(end[i], end[i + 1]))):
-                acroute.append(self.getAction(end[i], end[i + 1])[j])
+                f_p = end[i]
+                i = f_p_index
+        lroute = self.BFS_2(start, f_p)
+        #check 兩個點以內是否有 end
+        for i in lroute:
+            for succ in self.nd_dict[i].getSuccessors():
+                if not succ in lroute:
+                    if (int(succ[0])) in end and (not int(succ[0]) in tem) and (int(succ[0]) != f_p):
+                        tem.append(int(succ[0]))
+                        for l in range(len(end)):
+                            if end[l] == int(succ[0]):
+                                end.pop(l)
+                                break
+                    else:
+                        for succ_2 in self.nd_dict[int(succ[0])].getSuccessors():
+                            if int(succ_2[0]) in end and (not int(succ_2[0]) in tem) and (int(succ_2[0]) != f_p):
+                                tem.append(int(succ_2[0]))
+                                for l in range(len(end)):
+                                    if end[l] == int(succ_2[0]):
+                                        end.pop(l)
+                                        break
+        tem.append(f_p)
+        for i in range(len(end)):
+            if end[i] == f_p: end.pop(i)
+        acpath.append(start)
+        while len(tem) != 0:
+            actime += self.bfsdis[start][tem[0]]
+            acpath.append(tem[0])
+            tem.pop(0)
+        for i in range(len(acpath) - 1):
+                actime += self.bfsdis[acpath[i]][acpath[i + 1]]
+                for l in range(len(self.getAction(acpath[i], acpath[i + 1]))):
+                    acroute.append(self.getAction(acpath[i], acpath[i + 1])[l]) 
+        if len(end) != 0:
+            actime += self.bfsdis[acpath[-1]][end[0]]
+            for i in range(len(self.getAction(acpath[-1], end[0]))):
+                acroute.append(self.getAction(acpath[-1], end[0])[i]) 
+            for i in range(1,len(end)):
+                    actime += self.bfsdis[end[i - 1]][end[i]]
+                    for l in range(len(self.getAction(end[i - 1], end[i]))):
+                        acroute.append(self.getAction(end[i - 1], end[i])[l]) 
         acroute.append('S')
-
+        #跑排列
         while True:
             j = -1
             for i in range (len(end)-2, -1, -1):
@@ -265,22 +327,27 @@ class Maze:
                 end[left], end[right] = end[right], end[left]
                 left += 1
                 right -= 1
-            route = []
-            num = len(self.getAction(start, nodefp))
-            num += len(self.getAction(nodefp, end[0]))
-            for i in range (len(end) - 1):
-                num += len(self.getAction(end[i], end[i + 1]))
-            if num < actnum:
-                for i in range(len(self.getAction(start, nodefp))):
-                    route.append(self.getAction(start, nodefp)[i])
-                for i in range(len(self.getAction(nodefp, end[0]))):
-                    route.append(self.getAction(nodefp, end[0])[i])
-                for i in range (len(end) - 1):
-                    for l in range (len(self.getAction(end[i], end[i + 1]))):
-                        route.append(self.getAction(end[i], end[i + 1])[l])
-                route.append('S')
-                actnum = num
-                acroute = route
+            time = 0
+            for i in range(len(acpath) - 1):
+                time += self.bfsdis[acpath[i]][acpath[i + 1]]
+            if len(end) != 0:
+                time += self.bfsdis[acpath[-1]][end[0]]
+                for i in range(1,len(end)):
+                    time += self.bfsdis[end[i - 1]][end[i]]
+            if time < actime:
+                acroute = []
+                for i in range(len(acpath) - 1):
+                    for l in range(len(self.getAction(acpath[i], acpath[i + 1]))):
+                        acroute.append(self.getAction(acpath[i], acpath[i + 1])[l]) 
+                if len(end) != 0:
+                    for i in range(len(self.getAction(acpath[-1], end[0]))):
+                        acroute.append(self.getAction(acpath[-1], end[0])[i]) 
+                    for i in range(1,len(end)):
+                            for l in range(len(self.getAction(end[i - 1], end[i]))):
+                                acroute.append(self.getAction(end[i - 1], end[i])[l]) 
+                acroute.append('S')
+                actime = time
+                
 
 
     def strategy(self, nd):
@@ -291,4 +358,5 @@ class Maze:
 
 if __name__ == '__main__':
     mz = Maze("maze.csv")
-    print(mz.getTotalAction_2())
+    print(mz.getTotalAction())
+   
