@@ -51,7 +51,7 @@ def main():
 '''
 
 if __name__ == '__main__':
-    maze = mz.Maze("sample_code\sample_code\python\medium_maze.csv")
+    maze = mz.Maze("medium_maze.csv")
     
     interf = interface.interface()
     
@@ -65,8 +65,7 @@ if __name__ == '__main__':
     
     # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
     # time.sleep(3)
-    # myScoreboard = score.Scoreboard('FakeFilePath','三上6',"http://140.112.175.15:3000")
-    # time.sleep(3)
+    
     
     interf.start()
     
