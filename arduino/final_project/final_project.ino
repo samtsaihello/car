@@ -104,7 +104,7 @@ void loop();
 void loop(){
     SetState();
     if(_init){
-      delay(50);
+      delay(500);
       ask_action();
       _init = 0;
     }
@@ -161,10 +161,7 @@ void Search(){
   // TODO: let your car search graph(maze) according to bluetooth command from computer(python code)
 }
 
-
 String dir_string;
-
-
 void ask_action(){
   // char ready;
   
@@ -184,10 +181,6 @@ void ask_action(){
   #endif
   
   node_num = dir_string.length();
-  // direction_arr = new BT_CMD[node_num];
-  // for(int i=0;i<node_num;i++){
-  //   direction_arr[i] = Convert_msg(dir_string[i]);
-  // }
   init_action_list(dir_string,node_num);
 
 }

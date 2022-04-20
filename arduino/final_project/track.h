@@ -98,11 +98,6 @@ void init_action_list(String dir_string,int node_num){
 }
 
 void NodeDetected(){
-//  if(direction_arr[now_at]==Escape){
-//    MotorWriting(0, 0);
-//    delay(10000);
-//    return;
-//  }
   Turn(direction_arr[now_at]);
   now_at++;
   if(now_at+1>node_num){
