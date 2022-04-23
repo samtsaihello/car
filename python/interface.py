@@ -11,6 +11,7 @@ class interface:
         print("")
         self.ser = BT.bluetooth()
         port = input("PC bluetooth port name: ")
+        self.port = port
         while(not self.ser.do_connect(port)):
             if(port == "quit"):
                 self.ser.disconnect()

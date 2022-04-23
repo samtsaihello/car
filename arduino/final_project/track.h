@@ -45,8 +45,12 @@ double prev_correction_L=0;
 double prev_correction_R=0;
 int times=0;
 
+double adj_R=(230.0/255.0), adj_L=1;
 // Write the voltage to motor.
 void MotorWriting(double vL, double vR) {
+  vL = adj_L*vL;
+  vR = adj_R*vR;
+  
   if (vR>= 0) {
     digitalWrite(MotorR_I3, LOW);
     digitalWrite(MotorR_I4, HIGH);
@@ -116,7 +120,7 @@ void NodeDetected(){
 
 void Turn(BT_CMD dir){
   int vR,vL;
-  int delay_time=500;
+  int delay_time=400;
   if(dir==Left){
     
     vR= _Tp;
@@ -166,7 +170,7 @@ void tracking(){
   double powerCorrection;
   double powerCorrection_L;
   double powerCorrection_R;
-  double adj_R=(230.0/255.0), adj_L=1;
+  
   bool allBlack=0;
   //read sensor value
   SensorRead();
@@ -227,11 +231,11 @@ void tracking(){
 
     double Kp= 40;
     double Kd= 50;
-    double Ki= -10; //原本 -1 -10
+    double Ki= 10; //原本 -1 -10
 //    sumErr=0; //if comment => PID
 //    dErr=0;
 
-    powerCorrection = Kp* error +Kd*sumErr/100.0+Ki*dErr;
+    powerCorrection = Kp* error + Ki*sumErr/100.0 + Kd*dErr;
     powerCorrection_R = -powerCorrection;
     powerCorrection_L = powerCorrection;
     
@@ -249,7 +253,7 @@ void tracking(){
   prev_correction=powerCorrection;
   prev_correction_L=powerCorrection_L;
   prev_correction_R=powerCorrection_R;
-  MotorWriting(adj_L*vL, adj_R*vR);
+  MotorWriting(vL, vR);
 }// tracking
 
 #endif

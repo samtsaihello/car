@@ -8,4 +8,5 @@ rv = b"050104D0"
 ascii_string = rv.decode("ASCII")
 print(ascii_string)
 ascii_string = ascii_string.zfill(8)
-print(ascii_string)
+print(type(ascii_string))
+print(type(rv))
