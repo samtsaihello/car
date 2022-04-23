@@ -290,5 +290,7 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("maze.csv")
-    print(mz.getTotalAction_2())
+    mz = Maze("maze_1.csv")
+    # print(mz.getAction(2,12))
+    for i in mz.getTotalAction():
+        print(chr(ord(i)-ord('A')+ord('a')),end="")
