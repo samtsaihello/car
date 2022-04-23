@@ -103,6 +103,7 @@ void send_sentance(String msg,int len){
 // send UID back through SoftwareSerial object: BT
 void send_byte(byte *id, byte& idSize) {
   for (byte i = 0; i < idSize; i++) {  // Send UID consequently.
+    if(id[i]<10)BT.print(byte(0),HEX);
     BT.print(id[i],HEX);
   }
 //  BT.write("\n");
@@ -132,7 +133,8 @@ void send_RFID(){
         Serial.print("id[");
         Serial.print(i);
         Serial.print("]: ");
-        Serial.println(id[i], HEX);       // 以16進位顯示UID值  
+        Serial.println(id[i], HEX);
+//        Serial.println(id[i]<10);// 以16進位顯示UID值  
       }
       Serial.println();
       #endif

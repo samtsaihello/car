@@ -83,7 +83,7 @@ void setup()
 /*=====Import header files=====*/
 
 /*===========================initialize variables===========================*/
-int _Tp=180; //set your own value for motor power
+int _Tp=200; //set your own value for motor power
 bool state=false; //set state to false to halt the car, set state to true to activate the car
 bool autoControll = true;
 bool _init = 1;
