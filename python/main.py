@@ -15,7 +15,7 @@ def read():
     while True:
         msg = interf.ser.SerialReadString()
         if msg=="UID":
-            # print("UID:")
+            print("UID: " ,end="")
             UID = interf.get_UID()
             UID_str = UID[2:]
             bytes_object = bytes.fromhex(UID_str)
@@ -26,6 +26,12 @@ def read():
             # print("CurrentScore : ",point.getCurrentScore())
         elif msg!="":
             print(msg)
+
+def reconnecting():
+    while True:
+        if not interf.ser.ser.is_open:
+            interf.ser.reconnect(interf.port)
+        time.sleep(10)
 
 '''
 def main():
@@ -54,21 +60,26 @@ if __name__ == '__main__':
     maze = mz.Maze("medium_maze.csv")
     
     interf = interface.interface()
-    
+    mode = 2
+
     readThread = threading.Thread(target=read)
     readThread.daemon = True
     readThread.start()
 
     # TODO : Initialize necessary variables
-    interf.send_action(maze,1,6)
+    interf.send_action(maze,1,9,mode)
     time.sleep(1.5)
     
     # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
-    # time.sleep(3)
+    # time.sleep(0.5)
     
     
     interf.start()
     
+    btThread = threading.Thread(target=reconnecting)
+    btThread.daemon = True
+    btThread.start()
+
     while True:
         msgWrite = input()
         if msgWrite == "exit": sys.exit()
