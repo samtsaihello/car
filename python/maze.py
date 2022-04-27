@@ -115,11 +115,11 @@ class Maze:
         # Tips : return a sequence of nodes of the shortest path
         self.pred = []
         self.dis = []
-        straight = 1
-        turn_time = 2
-        back = 4
+        straight = 4
+        turn_time = 6
+        back = 7
         for i in range (100):
-            self.dis.append(int(200))
+            self.dis.append(int(1000))
         for i in range (100):
             self.pred.append(int(0))
         self.que = []
@@ -218,6 +218,7 @@ class Maze:
                     break
             
             if j == -1:
+                print(actime)
                 return acroute
             k = -1
             min = 200
@@ -286,13 +287,14 @@ class Maze:
             if end[i] == f_p: end.pop(i)
         acpath.append(start)
         while len(tem) != 0:
-            actime += self.bfsdis[start][tem[0]]
             acpath.append(tem[0])
             tem.pop(0)
+
         for i in range(len(acpath) - 1):
-                actime += self.bfsdis[acpath[i]][acpath[i + 1]]
-                for l in range(len(self.getAction(acpath[i], acpath[i + 1]))):
-                    acroute.append(self.getAction(acpath[i], acpath[i + 1])[l]) 
+            actime += self.bfsdis[acpath[i]][acpath[i + 1]]
+            for l in range(len(self.getAction(acpath[i], acpath[i + 1]))):
+                acroute.append(self.getAction(acpath[i], acpath[i + 1])[l]) 
+           
         if len(end) != 0:
             actime += self.bfsdis[acpath[-1]][end[0]]
             for i in range(len(self.getAction(acpath[-1], end[0]))):
@@ -311,6 +313,7 @@ class Maze:
                     break
             
             if j == -1:
+                print(actime)
                 return acroute
             
             k = -1
@@ -343,13 +346,11 @@ class Maze:
                     for i in range(len(self.getAction(acpath[-1], end[0]))):
                         acroute.append(self.getAction(acpath[-1], end[0])[i]) 
                     for i in range(1,len(end)):
-                            for l in range(len(self.getAction(end[i - 1], end[i]))):
-                                acroute.append(self.getAction(end[i - 1], end[i])[l]) 
+                        for l in range(len(self.getAction(end[i - 1], end[i]))):
+                            acroute.append(self.getAction(end[i - 1], end[i])[l]) 
                 acroute.append('S')
                 actime = time
                 
-
-
     def strategy(self, nd):
         return self.BFS(nd)
 
@@ -357,6 +358,6 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("maze.csv")
+    mz = Maze("medium_maze.csv")
     print(mz.getTotalAction())
    
