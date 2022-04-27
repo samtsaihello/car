@@ -29,6 +29,7 @@ class Maze:
         self.nodes = []
         self.nd_dict = dict()  # key: index, value: the correspond node
         self.bfsdis = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
+        self.score = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
         
         for i in range (self.num):
             d = Node (i+1)
@@ -155,6 +156,30 @@ class Maze:
             self.counted[a] = 1 
         
         return self.route
+
+    '''def getscore(self, r_time):
+        self.getAllPathTime()
+        for end in self.getEnd():
+            time = 0
+            score = 0
+            index = self.BFS_2(1,end)
+            
+            for node in index:
+
+            self.bfsdis[1][end], self.bfsdis[end][1] = time, time
+        _end = self.getEnd()
+        for i in range(len(_end)):
+            for j in range (i + 1, len(_end)):
+                time = 0
+                index = self.BFS_2(_end[i], _end[j])
+                act = self.getAction(_end[i], _end[j])
+                for l in range(len(index) - 1):
+                    time += self.nd_dict[index[l]].getDis(index[l + 1])
+                for a in act:
+                    if a == 'F': time += 1
+                    elif a == 'R' or a == 'L': time +=2
+                    elif a == 'B': time +=4
+                self.bfsdis[_end[i]][_end[j]], self.bfsdis[_end[j]][_end[i]] = time, time'''
 
     def getAction(self, nd_from, nd_to):
         # TODO : get the car action
@@ -356,6 +381,63 @@ class Maze:
                             acroute.append(self.getAction(end[i - 1], end[i])[l]) 
                 acroute.append('S')
                 actime = time
+
+    
+    def getTotalAction_3(self, r_time):
+        self.getAllPathTime()
+        end = self.getEnd()
+        start = self.getStartPoint()
+        actime = self.bfsdis[start][end[0]]
+        acscore = self.getMDistance(start, end[0])
+        acroute = []
+        for i in range (len(end) - 1):
+            actime += self.bfsdis[end[i]][end[i + 1]]
+            if actime <= r_time:
+                acscore += self.getMDistance(end[i], end[i + 1])
+            else: break
+        for i in range(len(self.getAction(start, end[0]))):
+            acroute.append(self.getAction(start, end[0])[i])
+        for i in range (len(end) - 1):
+            for l in range (len(self.getAction(end[i], end[i + 1]))):
+                acroute.append(self.getAction(end[i], end[i + 1])[l])
+        acroute.append('S')
+        while True:
+            j = -1
+            for i in range (len(end)-2, -1, -1):
+                if end[i] < end[i + 1]:
+                    j = i
+                    break
+            
+            if j == -1:
+                print(actime)
+                return acroute
+            k = -1
+            min = 200
+            for i in range (j,len(end)):
+                if end[i] > end[j] and end[i] <= min:
+                    min = end[i]
+                    k = i
+
+            end[j], end[k] = end[k], end[j]
+            left = j + 1
+            right = len(end) - 1
+            while left < right:
+                end[left], end[right] = end[right], end[left]
+                left += 1
+                right -= 1
+            time = self.bfsdis[start][end[0]]
+            score = self.getMDistance(start, end[0])
+            for i in range (len(end) - 1):
+                time += self.bfsdis[end[i]][end[i + 1]]
+            if time < actime:
+                acroute = []
+                for i in range(len(self.getAction(start, end[0]))):
+                    acroute.append(self.getAction(start, end[0])[i])
+                for i in range (len(end) - 1):
+                    for l in range (len(self.getAction(end[i], end[i + 1]))):
+                        acroute.append(self.getAction(end[i], end[i + 1])[l])
+                acroute.append('S')
+                actime = time
                 
     def strategy(self, nd):
         return self.BFS(nd)
@@ -365,5 +447,5 @@ class Maze:
 
 if __name__ == '__main__':
     mz = Maze("small_maze.csv")
-    print(mz.getTotalAction_2())
+    mz.getscore(12)
    
