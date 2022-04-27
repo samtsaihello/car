@@ -24,11 +24,12 @@ class Maze:
         self.turn_time = 6
         self.back = 7
         self.raw_data = pandas.read_csv(filepath)
-        self.num = len(self.raw_data.index)
+        self.num = 48
         self.adj_num = []
         self.counted = []
         for i in range (100):
             self.counted.append(0)
+            self.adj_num.append(0)
         self.nodes = []
         self.nd_dict = dict()  # key: index, value: the correspond node
         self.bfsdis = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
@@ -37,8 +38,9 @@ class Maze:
         for i in range (self.num + 1):
             self.mdistance.append(0)
         
-        for i in range (self.num):
-            d = Node (i+1)
+        for i in range (len(self.raw_data.index)):
+            num = self.raw_data['index'][i]
+            d = Node (num)
             coun = 0
             if not np.isnan(self.raw_data['North'][i]):
                 d.setSuccessor(self.raw_data['North'][i],3,self.raw_data['ND'][i])
@@ -53,14 +55,14 @@ class Maze:
                 d.setSuccessor(self.raw_data['East'][i],4,self.raw_data['ED'][i])
                 coun += 1
             
-            self.nd_dict[i+1] = d
-            self.adj_num.append(coun)
+            self.nd_dict[num] = d
+            self.adj_num[num] = coun
 
     def getNum(self):
         return self.num
 
     def getAdj(self, nd):
-        return self.adj_num[nd - 1]
+        return self.adj_num[nd]
 
     def getStartPoint(self):
         if (len(self.nd_dict) < 2):
@@ -138,6 +140,7 @@ class Maze:
     def BFS_2(self, nd_from, nd_to):
         # TODO : similar to BFS but with fixed start point and end point
         # Tips : return a sequence of nodes of the shortest path
+        
         self.pred = []
         self.dis = []
         for i in range (100):
@@ -297,6 +300,7 @@ class Maze:
                     for l in range (len(self.getAction(end[i], end[i + 1]))):
                         acroute.append(self.getAction(end[i], end[i + 1])[l])
                 acroute.append('S')
+                print(acroute)
                 actime = time
 
     def getTotalAction_2(self):
@@ -474,5 +478,6 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("maze.csv")
+    mz = Maze("maze_8x6_2.csv")
+    print(mz.getEnd())
     print(mz.getTotalAction_3(90 * 4.64))
