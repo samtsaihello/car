@@ -210,6 +210,12 @@ class Maze:
         acroute = []
         for i in range (len(end) - 1):
             actime += self.bfsdis[end[i]][end[i + 1]]
+        for i in range(len(self.getAction(start, end[0]))):
+            acroute.append(self.getAction(start, end[0])[i])
+        for i in range (len(end) - 1):
+            for l in range (len(self.getAction(end[i], end[i + 1]))):
+                acroute.append(self.getAction(end[i], end[i + 1])[l])
+        acroute.append('S')
         while True:
             j = -1
             for i in range (len(end)-2, -1, -1):
@@ -358,6 +364,6 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("medium_maze.csv")
-    print(mz.getTotalAction())
+    mz = Maze("small_maze.csv")
+    print(mz.getTotalAction_2())
    
