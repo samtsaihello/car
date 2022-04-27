@@ -127,7 +127,7 @@ void Turn(BT_CMD dir){
     vL= 100;
     MotorWriting(vL, vR);
     SensorRead();
-    }while(count!=1);
+    }while(count!=2);
 //    delay(delay_time);
     
   }
@@ -137,7 +137,7 @@ void Turn(BT_CMD dir){
     vL= 250;
     MotorWriting(vL, vR);
     SensorRead();
-    }while(count!=1);
+    }while(count!=2);
 //    delay(delay_time);
     
   }
@@ -156,7 +156,7 @@ void Turn(BT_CMD dir){
         MotorWriting(vL, vR);
         delay(10);
         SensorRead();
-      }while(count!=1);     
+      }while(count!=2);     
   }
   else{
     vR=0;
