@@ -292,6 +292,7 @@ class Maze:
             time = self.bfsdis[start][end[0]]
             for i in range (len(end) - 1):
                 time += self.bfsdis[end[i]][end[i + 1]]
+                if time > actime: break
             if time < actime:
                 acroute = []
                 for i in range(len(self.getAction(start, end[0]))):
@@ -480,4 +481,6 @@ class Maze:
 if __name__ == '__main__':
     mz = Maze("maze_8x6_2.csv")
     print(mz.getEnd())
-    print(mz.getTotalAction_3(90 * 4.64))
+    print(mz.getTotalAction())
+    #print(mz.getTotalAction_2())
+    #print(mz.getTotalAction_3(90 * 4.64))
