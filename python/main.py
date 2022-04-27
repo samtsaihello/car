@@ -57,17 +57,17 @@ def main():
 '''
 
 if __name__ == '__main__':
-    maze = mz.Maze("medium_maze.csv")
+    maze = mz.Maze("small_maze.csv")
     
     interf = interface.interface()
-    mode = 2
+    mode = 0
 
     readThread = threading.Thread(target=read)
     readThread.daemon = True
     readThread.start()
 
     # TODO : Initialize necessary variables
-    interf.send_action(maze,1,9,mode)
+    interf.send_action(maze,1,6,mode)
     time.sleep(1.5)
     
     # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")

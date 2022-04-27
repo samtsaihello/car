@@ -45,7 +45,7 @@ double prev_correction_L=0;
 double prev_correction_R=0;
 int times=0;
 
-double adj_R=(230.0/255.0), adj_L=1;
+double adj_R=(233.0/255.0)+2*0.001, adj_L=1;
 // Write the voltage to motor.
 void MotorWriting(double vL, double vR) {
   vL = adj_L*vL;
@@ -106,10 +106,10 @@ void NodeDetected(){
   Turn(direction_arr[now_at]);
   
   if(direction_arr[now_at]==Front || direction_arr[now_at+1]==Front){
-    _Tp = 245;
+    _Tp = 250;
   }
   else{
-    _Tp = 200;
+    _Tp = 220;
   }
   now_at++;
   if(now_at+1>node_num){
@@ -122,19 +122,23 @@ void Turn(BT_CMD dir){
   int vR,vL;
   int delay_time=400;
   if(dir==Left){
-    
-    vR= _Tp;
-    vL= 0;
+    do{
+    vR= 250;
+    vL= 100;
     MotorWriting(vL, vR);
-    delay(delay_time);
+    SensorRead();
+    }while(count!=1);
+//    delay(delay_time);
     
   }
   else if(dir==Right){
-    
-    vR= 0;
-    vL= _Tp;
+    do{
+    vR= 100;
+    vL= 250;
     MotorWriting(vL, vR);
-    delay(delay_time);
+    SensorRead();
+    }while(count!=1);
+//    delay(delay_time);
     
   }
   else if(dir==Front){ //直行
@@ -152,7 +156,7 @@ void Turn(BT_CMD dir){
         MotorWriting(vL, vR);
         delay(10);
         SensorRead();
-      }while(count==0);     
+      }while(count!=1);     
   }
   else{
     vR=0;
@@ -182,7 +186,7 @@ void tracking(){
   if(count==5){ //如果全黑
     allBlack=1;
     MotorWriting(_Tp, _Tp);
-    delay(150);
+    delay(50);
 //    MotorWriting(0,0);
 //    delay(10);
     SensorRead();  
@@ -206,17 +210,17 @@ void tracking(){
     powerCorrection_R=prev_correction_R;
   }
   else if(count==5){
-    do{
-        vR= _Tp;
-        vL= _Tp;
-        MotorWriting(vL, vR);
-        delay(10);
-
-        SensorRead();
-    }while(count==5);
-
-    MotorWriting(_Tp, _Tp);
-    delay(40);//原200,150
+//    do{
+//        vR= _Tp;
+//        vL= _Tp;
+//        MotorWriting(vL, vR);
+//        delay(10);
+//
+//        SensorRead();
+//    }while(count==5);
+//
+//    MotorWriting(_Tp, _Tp);
+//    delay(40);//原200,150
 
     NodeDetected();
     powerCorrection_L=prev_correction_L;
@@ -230,7 +234,7 @@ void tracking(){
     times = (times+100)%100;
 
     double Kp= 40;
-    double Kd= 50;
+    double Kd= 40;
     double Ki= 10; //原本 -1 -10
 //    sumErr=0; //if comment => PID
 //    dErr=0;
