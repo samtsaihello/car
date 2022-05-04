@@ -57,7 +57,7 @@ def main():
 '''
 
 if __name__ == '__main__':
-    maze = mz.Maze("small_maze.csv")
+    maze = mz.Maze("medium_maze.csv")
     
     interf = interface.interface()
     mode = 1
