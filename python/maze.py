@@ -483,7 +483,27 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("medium_maze.csv")
+    mz = Maze("maze_8x6_2.csv")
+    #mz = Maze("medium_maze.csv")
     #print(mz.getTotalAction())
-    print(mz.getTotalAction_2())
-    #print(mz.getTotalAction_3(30 * 4.64))
+    #print(mz.getTotalAction_2())
+    path = 'path.txt'
+    f = open(path, 'w')
+    '''
+    route = []
+    with open(path) as f:
+        for line in f.readlines():
+            s = line.split(' ')
+            route.append(s[0])
+    print(route)
+    #'''
+    route = mz.getTotalAction_3(90 * 4.64)
+    #'''
+    for i in range (len(route)):
+        f.write(route[i])
+        f.write(' ')
+        f.write('\n')
+    #'''
+    f.close()
+    #print(mz.getTotalAction_3(90 * 4.64))
+    
