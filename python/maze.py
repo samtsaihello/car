@@ -411,7 +411,6 @@ class Maze:
 
     
     def getTotalAction_3(self, r_time):
-        print(r_time)
         self.AllMDistance()
         self.getAllPathTime()
         end = self.getEnd()
