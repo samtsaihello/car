@@ -327,7 +327,7 @@ class Maze:
         #check 兩個點以內是否有 end
         for i in lroute:
             for succ in self.nd_dict[i].getSuccessors():
-                if not succ in lroute:
+                if not (succ[0] in lroute):
                     if (int(succ[0])) in end and (not int(succ[0]) in tem) and (int(succ[0]) != f_p):
                         tem.append(int(succ[0]))
                         for l in range(len(end)):
@@ -485,5 +485,5 @@ class Maze:
 if __name__ == '__main__':
     mz = Maze("medium_maze.csv")
     #print(mz.getTotalAction())
-    #print(mz.getTotalAction_2())
-    print(mz.getTotalAction_3(30 * 4.64))
+    print(mz.getTotalAction_2())
+    #print(mz.getTotalAction_3(30 * 4.64))
