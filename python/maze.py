@@ -20,19 +20,27 @@ class Maze:
 		# For example, when parsing raw_data, you may create several Node objects.  
 		# Then you can store these objects into self.nodes.  
 		# Finally, add to nd_dictionary by {key(index): value(corresponding node)}
+        self.straight = 4
+        self.turn_time = 6
+        self.back = 7
         self.raw_data = pandas.read_csv(filepath)
-        self.num = len(self.raw_data.index)
+        self.num = 48
         self.adj_num = []
         self.counted = []
         for i in range (100):
             self.counted.append(0)
+            self.adj_num.append(0)
         self.nodes = []
         self.nd_dict = dict()  # key: index, value: the correspond node
         self.bfsdis = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
         self.score = [[0 for _ in range(self.num + 1)] for _ in range(self.num + 1)]
+        self.mdistance = []
+        for i in range (self.num + 1):
+            self.mdistance.append(0)
         
-        for i in range (self.num):
-            d = Node (i+1)
+        for i in range (len(self.raw_data.index)):
+            num = self.raw_data['index'][i]
+            d = Node (num)
             coun = 0
             if not np.isnan(self.raw_data['North'][i]):
                 d.setSuccessor(self.raw_data['North'][i],3,self.raw_data['ND'][i])
@@ -47,14 +55,14 @@ class Maze:
                 d.setSuccessor(self.raw_data['East'][i],4,self.raw_data['ED'][i])
                 coun += 1
             
-            self.nd_dict[i+1] = d
-            self.adj_num.append(coun)
+            self.nd_dict[num] = d
+            self.adj_num[num] = coun
 
     def getNum(self):
         return self.num
 
     def getAdj(self, nd):
-        return self.adj_num[nd - 1]
+        return self.adj_num[nd]
 
     def getStartPoint(self):
         if (len(self.nd_dict) < 2):
@@ -66,8 +74,26 @@ class Maze:
 
     def getCounted(self, nd):
         return self.counted[nd]
+
+    def AllMDistance(self):
+        for end in self.getEnd():
+            route = self.BFS_2(self.getStartPoint(), end)
+            x = 0
+            y = 0
+            r = 0
+            for i in range (len(route) - 1):
+                dir = self.getNodeDict()[route[i]].getDirection(route[i + 1])
+                dis = self.getNodeDict()[route[i]].getDis(route[i + 1])
+                if dir == 3: x += dis
+                elif dir == 1: x -= dis
+                elif dir == 4: y += dis
+                else: y -= dis
+            if x < 0: x = -x
+            if y < 0: y = -y
+            r = x + y
+            self.mdistance[end] = r
     
-    def getMDistance(self, nd_from, nd_to):
+    '''def getMDistance(self, nd_from, nd_to):
         route = self.BFS_2(nd_from, nd_to)
         x = 0
         y = 0
@@ -82,7 +108,7 @@ class Maze:
         if x < 0: x = -x
         if y < 0: y = -y
         r = x + y
-        return r
+        return r'''
     
     def getEnd(self):
         end = []
@@ -114,11 +140,9 @@ class Maze:
     def BFS_2(self, nd_from, nd_to):
         # TODO : similar to BFS but with fixed start point and end point
         # Tips : return a sequence of nodes of the shortest path
+        
         self.pred = []
         self.dis = []
-        straight = 4
-        turn_time = 6
-        back = 7
         for i in range (100):
             self.dis.append(int(1000))
         for i in range (100):
@@ -129,13 +153,13 @@ class Maze:
         self.dis[nd_to] = 0
         while True:
             for succ in self.nd_dict[self.que[0]].getSuccessors():
-                exp_dis = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0])) * straight
+                exp_dis = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0])) * self.straight
                 dir_end = succ[1]
                 dir_start = self.pred[self.que[0]]
                 turn = self.TurnDirection(dir_end, dir_start)
-                if turn == 'F': exp_dis += straight
-                elif turn == 'R' or turn == 'L': exp_dis += turn_time
-                elif turn == 'B': exp_dis += back
+                if turn == 'F': exp_dis += self.straight
+                elif turn == 'R' or turn == 'L': exp_dis += self.turn_time
+                elif turn == 'B': exp_dis += self.back
                 if (exp_dis) < self.dis[int(succ[0])] :
                     self.que.append(int(succ[0]))
                     self.dis[int(succ[0])] = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0]))
@@ -207,11 +231,11 @@ class Maze:
             index = self.BFS_2(1,end)
             act = self.getAction(1,end)
             for i in range(len(index) - 1):
-                time += self.nd_dict[index[i]].getDis(index[i + 1])
+                time += self.nd_dict[index[i]].getDis(index[i + 1]) * self.straight
             for a in act:
-                if a == 'F': time += 1
-                elif a == 'R' or a == 'L': time +=2
-                elif a == 'B': time +=4
+                if a == 'F': time += self.straight
+                elif a == 'R' or a == 'L': time += self.turn_time
+                elif a == 'B': time += self.back
             self.bfsdis[1][end], self.bfsdis[end][1] = time, time
         _end = self.getEnd()
         for i in range(len(_end)):
@@ -233,6 +257,7 @@ class Maze:
         start = self.getStartPoint()
         actime = self.bfsdis[start][end[0]]
         acroute = []
+        acroute.append('F')
         for i in range (len(end) - 1):
             actime += self.bfsdis[end[i]][end[i + 1]]
         for i in range(len(self.getAction(start, end[0]))):
@@ -268,8 +293,10 @@ class Maze:
             time = self.bfsdis[start][end[0]]
             for i in range (len(end) - 1):
                 time += self.bfsdis[end[i]][end[i + 1]]
+                if time > actime: break
             if time < actime:
                 acroute = []
+                acroute.append('F')
                 for i in range(len(self.getAction(start, end[0]))):
                     acroute.append(self.getAction(start, end[0])[i])
                 for i in range (len(end) - 1):
@@ -279,19 +306,21 @@ class Maze:
                 actime = time
 
     def getTotalAction_2(self):
+        self.AllMDistance()
         self.getAllPathTime()
         end = self.getEnd()
         start = self.getStartPoint()
         acroute = []
+        acroute.append('F')
         actime = 0
         acpath = []
         tem = []
         ldis = 0
         f_p = 0
         f_p_index = 0
-        for i in range (len(end)):
-            if self.getMDistance(start, end[i]) > ldis:
-                ldis = self.getMDistance(start, end[i])
+        for i in range(len(end)):
+            if self.mdistance[end[i]] > ldis:
+                ldis = self.mdistance[end[i]]
                 f_p = end[i]
                 i = f_p_index
         lroute = self.BFS_2(start, f_p)
@@ -370,6 +399,7 @@ class Maze:
                     time += self.bfsdis[end[i - 1]][end[i]]
             if time < actime:
                 acroute = []
+                acroute.append('F')
                 for i in range(len(acpath) - 1):
                     for l in range(len(self.getAction(acpath[i], acpath[i + 1]))):
                         acroute.append(self.getAction(acpath[i], acpath[i + 1])[l]) 
@@ -384,17 +414,18 @@ class Maze:
 
     
     def getTotalAction_3(self, r_time):
+        self.AllMDistance()
         self.getAllPathTime()
         end = self.getEnd()
         start = self.getStartPoint()
         actime = self.bfsdis[start][end[0]]
-        acscore = self.getMDistance(start, end[0])
+        acscore = self.mdistance[end[0]]
         acroute = []
+        acroute.append('F')
         for i in range (len(end) - 1):
             actime += self.bfsdis[end[i]][end[i + 1]]
             if actime <= r_time:
-                acscore += self.getMDistance(end[i], end[i + 1])
-            else: break
+                acscore += self.mdistance[end[i + 1]]
         for i in range(len(self.getAction(start, end[0]))):
             acroute.append(self.getAction(start, end[0])[i])
         for i in range (len(end) - 1):
@@ -426,18 +457,24 @@ class Maze:
                 left += 1
                 right -= 1
             time = self.bfsdis[start][end[0]]
-            score = self.getMDistance(start, end[0])
+            score = self.mdistance[end[0]]
             for i in range (len(end) - 1):
                 time += self.bfsdis[end[i]][end[i + 1]]
-            if time < actime:
-                acroute = []
-                for i in range(len(self.getAction(start, end[0]))):
-                    acroute.append(self.getAction(start, end[0])[i])
-                for i in range (len(end) - 1):
-                    for l in range (len(self.getAction(end[i], end[i + 1]))):
-                        acroute.append(self.getAction(end[i], end[i + 1])[l])
-                acroute.append('S')
-                actime = time
+                if time <= r_time:
+                    score += self.mdistance[end[i + 1]]
+
+            if score >= acscore:
+                if (score > acscore) or (score == acscore and time < actime):
+                    acroute = []
+                    acroute.append('F')
+                    for i in range(len(self.getAction(start, end[0]))):
+                        acroute.append(self.getAction(start, end[0])[i])
+                    for i in range (len(end) - 1):
+                        for l in range (len(self.getAction(end[i], end[i + 1]))):
+                            acroute.append(self.getAction(end[i], end[i + 1])[l])
+                    acroute.append('S')
+                    acscore = score
+                    actime = time
                 
     def strategy(self, nd):
         return self.BFS(nd)
@@ -446,6 +483,7 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("small_maze.csv")
-    mz.getscore(12)
-   
+    mz = Maze("medium_maze.csv")
+    #print(mz.getTotalAction())
+    #print(mz.getTotalAction_2())
+    print(mz.getTotalAction_3(30 * 4.64))

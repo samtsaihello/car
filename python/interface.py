@@ -22,7 +22,7 @@ class interface:
     def get_UID(self):
         return self.ser.SerialReadByte()
 
-    def send_action(self, mz,nd_from, nd_to,mode):
+    def send_action(self, mz,nd_from, nd_to,r_time,mode):
         # TODO : send the action to car
         # print("hi")
         if mode==0:
@@ -31,6 +31,8 @@ class interface:
             self.action = mz.getTotalAction()
         elif mode ==2:
             self.action = mz.getTotalAction_2()
+        elif mode == 3:
+            self.action = mz.getTotalAction_3(r_time)
         print(self.action)
         for i in range (len(self.action)):
             self.ser.SerialWrite(self.action[i])

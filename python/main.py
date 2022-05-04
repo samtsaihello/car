@@ -61,13 +61,13 @@ if __name__ == '__main__':
     
     interf = interface.interface()
     mode = 1
-
+    r_time = 30
     readThread = threading.Thread(target=read)
     readThread.daemon = True
     readThread.start()
 
     # TODO : Initialize necessary variables
-    interf.send_action(maze,1,6,mode)
+    interf.send_action(maze,1,6,r_time * 4.64,mode)
     time.sleep(1.5)
     
     # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
