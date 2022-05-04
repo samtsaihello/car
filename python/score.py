@@ -118,7 +118,9 @@ class Socket(socketio.ClientNamespace):
 
 if __name__ == '__main__':
     import time
-    myScoreboard = Scoreboard('FakeFilePath','iamBig',"http://localhost:3000")
-    time.sleep(3)
+    myScoreboard = Scoreboard('FakeFilePath','lalalala',"http://140.112.175.15:3000")
+    # time.sleep(3)
     myScoreboard.add_UID("71A5261C")
-    print(myScoreboard.getCurrentScore())
+    res = requests.get(myScoreboard.ip + '/game_status')
+    print(type(res.json()['time_remain']))
+    # print(myScoreboard.getCurrentScore())
