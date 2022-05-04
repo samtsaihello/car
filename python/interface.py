@@ -33,6 +33,13 @@ class interface:
             self.action = mz.getTotalAction_2()
         elif mode == 3:
             self.action = mz.getTotalAction_3(r_time)
+        elif mode == 4:
+            self.action = []
+            path = 'path.txt'
+            with open(path) as f:
+                for line in f.readlines():
+                    s = line.split(' ')
+                    self.action.append(s[0])
         print(self.action)
         for i in range (len(self.action)):
             self.ser.SerialWrite(self.action[i])
@@ -48,4 +55,4 @@ class interface:
 if __name__ == '__main__':
     mz = maze.Maze("small_maze.csv")
     it = interface()
-    it.send_action(mz,6,3)
+    it.send_action(mz,6,3,90,4)
