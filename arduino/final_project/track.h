@@ -120,24 +120,28 @@ void NodeDetected(){
 
 void Turn(BT_CMD dir){
   int vR,vL;
-  int delay_time=400;
+  int delay_time=350;
   if(dir==Left){
-    do{
     vR= 250;
-    vL= 100;
+    vL= 94;//94
     MotorWriting(vL, vR);
-    SensorRead();
-    }while(count!=2);
+    delay(delay_time);
+    do{
+      MotorWriting(vL, vR);
+      SensorRead();
+    }while(digitalRead(35)!=1||count!=1);
 //    delay(delay_time);
     
   }
   else if(dir==Right){
-    do{
-    vR= 100;
+    vR= 94;//94
     vL= 250;
     MotorWriting(vL, vR);
+    delay(delay_time);
+    do{
+    MotorWriting(vL, vR);
     SensorRead();
-    }while(count!=2);
+    }while(digitalRead(35)!=1||count!=1);
 //    delay(delay_time);
     
   }
@@ -145,18 +149,24 @@ void Turn(BT_CMD dir){
     
     vR= _Tp;
     vL= _Tp;
-    MotorWriting(vL, vR);  
+    MotorWriting(0.95*vL, vR);
+    delay(100);
+    do{
+        delay(10);
+        SensorRead();
+      }while(count!=1);
   }
   else if(dir==Return){ //迴轉
     // MotorWriting(_Tp, _Tp);
     // delay(100);
+    vR= _Tp;
+    vL= -_Tp;
+    MotorWriting(vL, vR);
+    delay(50);
     do{
-        vR= _Tp;
-        vL= -_Tp;
-        MotorWriting(vL, vR);
-        delay(10);
+        delay(1);
         SensorRead();
-      }while(count!=2);     
+      }while(count!=1);     
   }
   else{
     vR=0;

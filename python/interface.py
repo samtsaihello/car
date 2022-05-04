@@ -36,7 +36,7 @@ class interface:
             self.ser.SerialWrite(self.action[i])
 
     def start(self):
-        # input("Press enter to start.")
+        input("Press enter to start.")
         self.ser.SerialWrite('s')
 
     def end_process(self):
