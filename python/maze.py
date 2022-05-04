@@ -1,3 +1,4 @@
+from os import times
 from node import *
 import numpy as np
 import csv
@@ -244,13 +245,12 @@ class Maze:
                 index = self.BFS_2(_end[i], _end[j])
                 act = self.getAction(_end[i], _end[j])
                 for l in range(len(index) - 1):
-                    time += self.nd_dict[index[l]].getDis(index[l + 1])
+                    time += self.nd_dict[index[l]].getDis(index[l + 1]) * self.straight
                 for a in act:
-                    if a == 'F': time += 1
-                    elif a == 'R' or a == 'L': time +=2
-                    elif a == 'B': time +=4
+                    if a == 'F': time += self.straight
+                    elif a == 'R' or a == 'L': time += self.turn_time
+                    elif a == 'B': time += self.back
                 self.bfsdis[_end[i]][_end[j]], self.bfsdis[_end[j]][_end[i]] = time, time
-
     def getTotalAction(self):
         self.getAllPathTime()
         end = self.getEnd()
@@ -460,7 +460,7 @@ class Maze:
             score = self.mdistance[end[0]]
             for i in range (len(end) - 1):
                 time += self.bfsdis[end[i]][end[i + 1]]
-                if time <= r_time:
+                if time-7 <= r_time:
                     score += self.mdistance[end[i + 1]]
 
             if score >= acscore:
@@ -487,23 +487,24 @@ if __name__ == '__main__':
     #mz = Maze("medium_maze.csv")
     #print(mz.getTotalAction())
     #print(mz.getTotalAction_2())
+    '''
     path = 'path.txt'
     f = open(path, 'w')
-    '''
+    
     route = []
     with open(path) as f:
         for line in f.readlines():
             s = line.split(' ')
             route.append(s[0])
     print(route)
-    #'''
+    
     route = mz.getTotalAction_3(90 * 4.64)
-    #'''
+    
     for i in range (len(route)):
         f.write(route[i])
         f.write(' ')
         f.write('\n')
-    #'''
     f.close()
-    #print(mz.getTotalAction_3(90 * 4.64))
+    '''
+    print(mz.getTotalAction_3(90 * 12))
     
