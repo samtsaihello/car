@@ -163,7 +163,7 @@ void Turn(BT_CMD dir){
     vR= temp;
     vL= -temp;
     MotorWriting(vL, vR);
-    delay(50);
+    delay(70);
     do{
         delay(1);
         SensorRead();

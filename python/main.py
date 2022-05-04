@@ -22,8 +22,8 @@ def read():
             ascii_string = bytes_object.decode("ASCII")
             ascii_string = ascii_string.zfill(8)
             print(ascii_string)
-            # point.add_UID(ascii_string)
-            # print("CurrentScore : ",point.getCurrentScore())
+            point.add_UID(ascii_string)
+            print("CurrentScore : ",point.getCurrentScore())
         elif msg!="":
             print(msg)
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     maze = mz.Maze("medium_maze.csv")
     
     interf = interface.interface()
-    mode = 1
+    mode = 3
     r_time = 30
     readThread = threading.Thread(target=read)
     readThread.daemon = True
@@ -70,8 +70,8 @@ if __name__ == '__main__':
     interf.send_action(maze,1,6,r_time * 4.64,mode)
     time.sleep(1.5)
     
-    # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
-    # time.sleep(0.5)
+    point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
+    time.sleep(0.5)
     
     
     interf.start()
