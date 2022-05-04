@@ -57,12 +57,11 @@ def main():
 '''
 
 if __name__ == '__main__':
-    maze = mz.Maze("small_maze.csv")
+    maze = mz.Maze("medium_maze.csv")
     
     interf = interface.interface()
-    mode = 0
+    mode = 1
     r_time = 30
-
     readThread = threading.Thread(target=read)
     readThread.daemon = True
     readThread.start()
