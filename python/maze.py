@@ -154,7 +154,7 @@ class Maze:
         self.dis[nd_to] = 0
         while True:
             for succ in self.nd_dict[self.que[0]].getSuccessors():
-                exp_dis = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0])) * self.straight
+                exp_dis = self.dis[self.que[0]] + (self.nd_dict[self.que[0]].getDis(int(succ[0])) - 1) * self.straight
                 dir_end = succ[1]
                 dir_start = self.pred[self.que[0]]
                 turn = self.TurnDirection(dir_end, dir_start)
@@ -163,7 +163,7 @@ class Maze:
                 elif turn == 'B': exp_dis += self.back
                 if (exp_dis) < self.dis[int(succ[0])] :
                     self.que.append(int(succ[0]))
-                    self.dis[int(succ[0])] = self.dis[self.que[0]] + self.nd_dict[self.que[0]].getDis(int(succ[0]))
+                    self.dis[int(succ[0])] = exp_dis
                     self.pred[int(succ[0])] = self.que[0]
             if len(self.que) == 1:
                 break
@@ -179,7 +179,6 @@ class Maze:
                 break
         for a in self.route:
             self.counted[a] = 1 
-        
         return self.route
 
     '''def getscore(self, r_time):
@@ -232,7 +231,7 @@ class Maze:
             index = self.BFS_2(1,end)
             act = self.getAction(1,end)
             for i in range(len(index) - 1):
-                time += self.nd_dict[index[i]].getDis(index[i + 1]) * self.straight
+                time += (self.nd_dict[index[i]].getDis(index[i + 1])-1) * self.straight
             for a in act:
                 if a == 'F': time += self.straight
                 elif a == 'R' or a == 'L': time += self.turn_time
@@ -251,6 +250,8 @@ class Maze:
                     elif a == 'R' or a == 'L': time += self.turn_time
                     elif a == 'B': time += self.back
                 self.bfsdis[_end[i]][_end[j]], self.bfsdis[_end[j]][_end[i]] = time, time
+        print (self.bfsdis)
+
     def getTotalAction(self):
         self.getAllPathTime()
         end = self.getEnd()
@@ -486,6 +487,7 @@ if __name__ == '__main__':
     mz = Maze("maze_8x6_2.csv")
     #mz = Maze("medium_maze.csv")
     #print(mz.getTotalAction())
+    print(mz.BFS_2(1,48))
     #print(mz.getTotalAction_2())
     '''
     path = 'path.txt'
@@ -506,5 +508,5 @@ if __name__ == '__main__':
         f.write('\n')
     f.close()
     '''
-    print(mz.getTotalAction_3(90 * 12))
+    #print(mz.getTotalAction_3(90 * 12))
     
