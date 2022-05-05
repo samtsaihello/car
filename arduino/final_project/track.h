@@ -159,15 +159,17 @@ void Turn(BT_CMD dir){
   else if(dir==Return){ //迴轉
     // MotorWriting(_Tp, _Tp);
     // delay(100);
-    double temp = _Tp*0.9;
+    double temp = _Tp;
     vR= temp;
     vL= -temp;
     MotorWriting(vL, vR);
-    delay(70);
-    do{
-        delay(1);
-        SensorRead();
-      }while(count!=1);     
+    delay(570);
+    vL=temp;
+    MotorWriting(vL, vR);
+//    do{
+//        delay(1);
+//        SensorRead();
+//      }while(count!=1);     
   }
   else{
     vR=0;

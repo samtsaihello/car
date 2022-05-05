@@ -11,6 +11,8 @@ import pandas
 import time
 import sys
 import os
+
+import requests
 def read():
     while True:
         msg = interf.ser.SerialReadString()
@@ -22,16 +24,20 @@ def read():
             ascii_string = bytes_object.decode("ASCII")
             ascii_string = ascii_string.zfill(8)
             print(ascii_string)
-            point.add_UID(ascii_string)
-            print("CurrentScore : ",point.getCurrentScore())
+            # point.add_UID(ascii_string)
+            # print("CurrentScore : ",point.getCurrentScore())
         elif msg!="":
             print(msg)
 
-def reconnecting():
-    while True:
-        if not interf.ser.ser.is_open:
-            interf.ser.reconnect(interf.port)
-        time.sleep(10)
+# def reconnecting():
+#     print("reconnecting open")
+#     while True:
+#         # print("check")
+#         print(interf.ser.ser.is_open)
+#         if not interf.ser.ser.is_open:
+#             print("lost")
+#             interf.ser.reconnect(interf.port)
+#         time.sleep(5)
 
 '''
 def main():
@@ -69,16 +75,27 @@ if __name__ == '__main__':
     # TODO : Initialize necessary variables
     interf.send_action(maze,1,6,r_time * 12 ,mode)
     time.sleep(1.5)
+
+    # btThread = threading.Thread(target=reconnecting)
+    # btThread.daemon = True
+    # btThread.start()
+
+
+    # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
+    # time.sleep(0.5)
     
-    point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
-    time.sleep(0.5)
-    
-    
+    # res = requests.get(point.ip + '/game_status')
+    # servertime = res.json()['time_remain']
+    # while(servertime>25):
+    #     time.sleep(0.1)
+    #     res = requests.get(point.ip + '/game_status')
+    #     servertime = res.json()['time_remain']
+        
+    # print(res.json()['time_remain'])
+
     interf.start()
     
-    btThread = threading.Thread(target=reconnecting)
-    btThread.daemon = True
-    btThread.start()
+    
 
     while True:
         msgWrite = input()
