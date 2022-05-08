@@ -23,8 +23,14 @@ class interface:
         return self.ser.SerialReadByte()
 
     def send_action(self, mz,nd_from, nd_to,r_time,mode):
-        # TODO : send the action to car
-        # print("hi")
+        '''
+        ## send the action to car\n
+        Mode 0 : getAction from A to B
+        Mode 1 : getTotalAction
+        Mode 2 : go to the furthest end point then alone the path get into 2 step end point
+        Mode 3 : getTotalAction with consideration of time bias
+        Mode 4 : read action from file 'path.txt'
+        '''
         if mode==0:
             self.action = mz.getAction(nd_from, nd_to)
         elif mode==1:
