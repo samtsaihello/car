@@ -55,4 +55,4 @@ class interface:
 if __name__ == '__main__':
     mz = maze.Maze("small_maze.csv")
     it = interface()
-    it.send_action(mz,6,3,90,4)
+    it.send_action(mz,6,3,90 * 12,4)

@@ -443,6 +443,7 @@ class Maze:
             
             if j == -1:
                 print(actime)
+                print(acscore * 10)
                 return acroute
             k = -1
             min = 200
@@ -485,24 +486,24 @@ class Maze:
         return self.BFS_2(nd_from, nd_to)
 
 if __name__ == '__main__':
-    mz = Maze("maze_8x6_2.csv")
-    #mz = Maze("medium_maze.csv")
-    print(mz.getTotalAction())
+    #mz = Maze("maze_8x6_2.csv")
+    mz = Maze("medium_maze.csv")
+    #print(mz.getTotalAction())
     #print(mz.BFS_2(4,48))
     #print(mz.getAction(4,48))
     #print(mz.getTotalAction_2())
-    '''
-    path = 'path_2.txt'
-    f = open(path, 'w')
     
+    path = 'medium_path.txt'
+    f = open(path, 'w')
+    '''
     route = []
     with open(path) as f:
         for line in f.readlines():
             s = line.split(' ')
             route.append(s[0])
     print(route)
-    
-    route = mz.getTotalAction_2()
+    '''
+    route = mz.getTotalAction()
     
     for i in range (len(route)):
         f.write(route[i])
@@ -510,6 +511,6 @@ if __name__ == '__main__':
         f.write('\n')
     
     f.close()
-    '''
-    #print(mz.getTotalAction_3(90 * 12))
+    
+    #print(mz.getTotalAction_3(90 * 8.86))
     
