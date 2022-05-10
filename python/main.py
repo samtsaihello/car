@@ -24,11 +24,13 @@ def read():
             ascii_string = bytes_object.decode("ASCII")
             ascii_string = ascii_string.zfill(8)
             print(ascii_string)
-            # point.add_UID(ascii_string)
-            # print("CurrentScore : ",point.getCurrentScore())
+            if connect2server:
+                point.add_UID(ascii_string)
+                print("CurrentScore : ",point.getCurrentScore())
         elif msg!="":
             print(msg)
 
+'''useless'''
 # def reconnecting():
 #     print("reconnecting open")
 #     while True:
@@ -62,9 +64,12 @@ def main():
     #     # TODO: You can write your code to test specific function.#
 '''
 
+
 if __name__ == '__main__':
+    connect2server = False
+
     maze = mz.Maze("medium_maze.csv")
-    
+        
     interf = interface.interface()
     mode = 3
     r_time = 30
@@ -75,23 +80,23 @@ if __name__ == '__main__':
     # TODO : Initialize necessary variables
     interf.send_action(maze,1,6,r_time * 12 ,mode)
     time.sleep(1.5)
-
-    # btThread = threading.Thread(target=reconnecting)
-    # btThread.daemon = True
-    # btThread.start()
-
-
-    # point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
-    # time.sleep(0.5)
     
-    # res = requests.get(point.ip + '/game_status')
-    # servertime = res.json()['time_remain']
-    # while(servertime>25):
-    #     time.sleep(0.1)
-    #     res = requests.get(point.ip + '/game_status')
-    #     servertime = res.json()['time_remain']
+    if input("Do you want to connect to the server? (y/n):") in ['y','Y','yes','Yes','YES']:
+        connect2server = True
+
+    if connect2server :
+        point = score.Scoreboard("UID.csv", "三上6","http://140.112.175.15:3000")
+        time.sleep(0.5)
         
-    # print(res.json()['time_remain'])
+        res = requests.get(point.ip + '/game_status')
+        servertime = res.json()['time_remain']
+        while(servertime>90):
+            time.sleep(0.5)
+            print(servertime)
+            res = requests.get(point.ip + '/game_status')
+            servertime = res.json()['time_remain']
+            
+        print(res.json()['time_remain'])
 
     interf.start()
     
