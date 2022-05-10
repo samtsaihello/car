@@ -510,6 +510,8 @@ if __name__ == '__main__':
         f.write(' ')
         f.write('\n')
     
+    
+    
     f.close()
     
     #print(mz.getTotalAction_3(90 * 8.86))
