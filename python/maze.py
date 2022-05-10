@@ -22,7 +22,7 @@ class Maze:
 		# Then you can store these objects into self.nodes.  
 		# Finally, add to nd_dictionary by {key(index): value(corresponding node)}
         self.straight = 4
-        self.turn_time = 6
+        self.turn_time = 8
         self.back = 7
         self.raw_data = pandas.read_csv(filepath)
         self.num = 48
@@ -155,12 +155,13 @@ class Maze:
         while True:
             for succ in self.nd_dict[self.que[0]].getSuccessors():
                 exp_dis = self.dis[self.que[0]] + (self.nd_dict[self.que[0]].getDis(int(succ[0])) - 1) * self.straight
-                dir_end = succ[1]
-                dir_start = self.pred[self.que[0]]
-                turn = self.TurnDirection(dir_end, dir_start)
-                if turn == 'F': exp_dis += self.straight
-                elif turn == 'R' or turn == 'L': exp_dis += self.turn_time
-                elif turn == 'B': exp_dis += self.back
+                if self.pred[self.que[0]] != 0:
+                    dir_end = succ[1]
+                    dir_start = self.nd_dict[self.que[0]].getDirection(self.pred[self.que[0]])
+                    turn = self.TurnDirection(dir_end, dir_start)
+                    if turn == 'F': exp_dis += self.straight
+                    elif turn == 'R' or turn == 'L': exp_dis += self.turn_time
+                    elif turn == 'B': exp_dis += self.back
                 if (exp_dis) < self.dis[int(succ[0])] :
                     self.que.append(int(succ[0]))
                     self.dis[int(succ[0])] = exp_dis
@@ -244,13 +245,13 @@ class Maze:
                 index = self.BFS_2(_end[i], _end[j])
                 act = self.getAction(_end[i], _end[j])
                 for l in range(len(index) - 1):
-                    time += self.nd_dict[index[l]].getDis(index[l + 1]) * self.straight
+                    time += (self.nd_dict[index[l]].getDis(index[l + 1])-1) * self.straight
                 for a in act:
                     if a == 'F': time += self.straight
                     elif a == 'R' or a == 'L': time += self.turn_time
                     elif a == 'B': time += self.back
                 self.bfsdis[_end[i]][_end[j]], self.bfsdis[_end[j]][_end[i]] = time, time
-        print (self.bfsdis)
+        #print(self.bfsdis)
 
     def getTotalAction(self):
         self.getAllPathTime()
@@ -486,11 +487,12 @@ class Maze:
 if __name__ == '__main__':
     mz = Maze("maze_8x6_2.csv")
     #mz = Maze("medium_maze.csv")
-    #print(mz.getTotalAction())
-    print(mz.BFS_2(1,48))
+    print(mz.getTotalAction())
+    #print(mz.BFS_2(4,48))
+    #print(mz.getAction(4,48))
     #print(mz.getTotalAction_2())
     '''
-    path = 'path.txt'
+    path = 'path_2.txt'
     f = open(path, 'w')
     
     route = []
@@ -500,12 +502,13 @@ if __name__ == '__main__':
             route.append(s[0])
     print(route)
     
-    route = mz.getTotalAction_3(90 * 4.64)
+    route = mz.getTotalAction_2()
     
     for i in range (len(route)):
         f.write(route[i])
         f.write(' ')
         f.write('\n')
+    
     f.close()
     '''
     #print(mz.getTotalAction_3(90 * 12))
