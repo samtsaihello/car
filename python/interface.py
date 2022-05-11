@@ -46,7 +46,7 @@ class interface:
                 for line in f.readlines():
                     s = line.split(' ')
                     self.action.append(s[0])
-        print(self.action)
+        # print(self.action==mz.getTotalAction())
         for i in range (len(self.action)):
             self.ser.SerialWrite(self.action[i])
 
@@ -57,6 +57,15 @@ class interface:
     def end_process(self):
         self.ser.SerialWrite('e')
         self.ser.disconnect()
+    
+    def check(self):
+        action = []
+        path = 'medium_path.txt'
+        with open(path) as f:
+            for line in f.readlines():
+                s = line.split(' ')
+                action.append(s[0])
+        print(action==mz.getTotalAction())
 
 if __name__ == '__main__':
     mz = maze.Maze("small_maze.csv")

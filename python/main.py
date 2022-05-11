@@ -19,6 +19,7 @@ def read():
         if msg=="UID":
             print("UID: " ,end="")
             UID = interf.get_UID()
+            # print(UID)
             UID_str = UID[2:]
             bytes_object = bytes.fromhex(UID_str)
             ascii_string = bytes_object.decode("ASCII")
@@ -71,7 +72,7 @@ if __name__ == '__main__':
     maze = mz.Maze("medium_maze.csv")
         
     interf = interface.interface()
-    mode = 3
+    mode = 4
     r_time = 30
     readThread = threading.Thread(target=read)
     readThread.daemon = True
@@ -97,7 +98,8 @@ if __name__ == '__main__':
             servertime = res.json()['time_remain']
             
         print(res.json()['time_remain'])
-
+    else:
+        input("Press enter to start.")
     interf.start()
     
     

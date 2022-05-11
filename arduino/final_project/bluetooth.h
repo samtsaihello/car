@@ -103,7 +103,7 @@ void send_sentance(String msg,int len){
 // send UID back through SoftwareSerial object: BT
 void send_byte(byte *id, byte& idSize) {
   for (byte i = 0; i < idSize; i++) {  // Send UID consequently.
-    if(id[i]<10)BT.print(byte(0),HEX);
+    if(id[i]<16)BT.print(byte(0),HEX);
     BT.print(id[i],HEX);
   }
 //  BT.write("\n");

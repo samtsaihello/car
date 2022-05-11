@@ -45,7 +45,7 @@ double prev_correction_L=0;
 double prev_correction_R=0;
 int times=0;
 
-double adj_R=(233.0/255.0)+2*0.001, adj_L=1;
+double adj_R=(225.0/255.0)+2*0.001, adj_L=1;
 // Write the voltage to motor.
 void MotorWriting(double vL, double vR) {
   vL = adj_L*vL;
